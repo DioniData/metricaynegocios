@@ -250,11 +250,11 @@ footer{background:#030810;border-top:1px solid var(--border);padding:24px 5%;dis
           <div class="acc-head" onclick="toggleAcc(this)">
             <div class="acc-left">
               <div class="acc-ico">📈</div>
-              <span class="acc-name">Estructuración financiera de proyectos</span>
+              <span class="acc-name">Evaluación y estructuración de proyectos</span>
             </div>
-            <div class="acc-right"><span class="acc-tag">Finanzas</span><div class="acc-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+            <div class="acc-right"><span class="acc-tag">Proyectos</span><div class="acc-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
           </div>
-          <div class="acc-body"><div class="acc-inner"><div class="acc-inner-pad"><p>Planificación financiera completa, análisis de viabilidad y valoración de proyectos. Te decimos con números si tu proyecto tiene sentido antes de que inviertas un peso.</p></div></div></div>
+          <div class="acc-body"><div class="acc-inner"><div class="acc-inner-pad"><p>Análisis puntual para decisiones de inversión: viabilidad financiera, valoración, flujo de caja y sensibilidades. Te decimos con números si tu proyecto tiene sentido antes de que inviertas un peso.</p></div></div></div>
         </div>
         <div class="acc-item">
           <div class="acc-head" onclick="toggleAcc(this)">
@@ -329,12 +329,12 @@ footer{background:#030810;border-top:1px solid var(--border);padding:24px 5%;dis
         <div class="acc-item">
           <div class="acc-head" onclick="toggleAcc(this)">
             <div class="acc-left">
-              <div class="acc-ico green">📉</div>
-              <span class="acc-name">Dashboards y reportes personalizados</span>
+              <div class="acc-ico green">📊</div>
+              <span class="acc-name">Dashboards e inteligencia de negocio</span>
             </div>
-            <div class="acc-right"><span class="acc-tag green">Reporting</span><div class="acc-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+            <div class="acc-right"><span class="acc-tag green">BI</span><div class="acc-chevron"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
           </div>
-          <div class="acc-body"><div class="acc-inner"><div class="acc-inner-pad"><p>Paneles de control interactivos con los indicadores clave de tu negocio en tiempo real. Alertas automáticas y reportes gerenciales que tú y tu equipo pueden usar desde el día uno, sin necesidad de ser expertos.</p></div></div></div>
+          <div class="acc-body"><div class="acc-inner"><div class="acc-inner-pad"><p>Herramienta permanente para monitorear tu negocio: paneles interactivos en Excel o Power BI con indicadores clave, flujo de caja, punto de equilibrio y alertas automáticas. Tu equipo la usa día a día, sin necesidad de ser expertos.</p></div></div></div>
         </div>
       </div>
     </div>
@@ -472,7 +472,7 @@ footer{background:#030810;border-top:1px solid var(--border);padding:24px 5%;dis
           </select>
         </div>
         <div class="fg"><label>CUÉNTANOS TU RETO</label><textarea id="f-msg" placeholder="¿Qué problema quieres resolver?"></textarea></div>
-        <button class="btn-send" onclick="sendForm()">Enviar mensaje</button>
+        <button class="btn-send" id="btn-send" onclick="sendForm()">Enviar mensaje</button>
         <p class="form-note">Te respondemos en menos de 24 horas</p>
       </div>
     </div>
@@ -505,13 +505,32 @@ function showCat(idx,el){
   panel.querySelectorAll('.acc-item').forEach((it,i)=>it.classList.toggle('open',i===0));
 }
 
-function sendForm(){
-  const n=document.getElementById('f-name').value;
-  const e=document.getElementById('f-email').value;
+async function sendForm(){
+  const n=document.getElementById('f-name').value.trim();
+  const e=document.getElementById('f-email').value.trim();
+  const c=document.getElementById('f-company').value.trim();
+  const s=document.getElementById('f-service').value;
+  const m=document.getElementById('f-msg').value.trim();
   if(!n||!e){alert('Por favor ingresa tu nombre y correo.');return;}
-  const btn=document.querySelector('.btn-send');
-  btn.textContent='✅ ¡Mensaje enviado! Te contactamos pronto.';
-  btn.disabled=true;btn.style.background='#1B5E20';
+  const btn=document.getElementById('btn-send');
+  btn.textContent='Enviando...';btn.disabled=true;
+  try{
+    const res=await fetch('https://formspree.io/f/YOUR_FORM_ID',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Accept':'application/json'},
+      body:JSON.stringify({nombre:n,empresa:c,correo:e,servicio:s,mensaje:m})
+    });
+    if(res.ok){
+      btn.textContent='✅ ¡Mensaje enviado! Te contactamos pronto.';
+      btn.style.background='#1B5E20';
+    } else {
+      btn.textContent='❌ Error al enviar. Escríbenos directo al correo.';
+      btn.style.background='#7f1d1d';btn.disabled=false;
+    }
+  } catch(err){
+    btn.textContent='❌ Sin conexión. Intenta de nuevo.';
+    btn.style.background='#7f1d1d';btn.disabled=false;
+  }
 }
 </script>
 </body>
