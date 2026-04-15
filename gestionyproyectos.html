@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Gestión & Proyectos — Métrica & Negocios</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#010D08;--surface:#061410;--surface2:#0C1E18;--border:#1A3028;
+  --green:#2E7D52;--green-light:#4CAF50;--green-pale:#E8F5E9;
+  --text:#F0F0F0;--muted:#7AA890;--white:#fff;
+  --accent:#2E9E6B;--accent-light:#4CAF80;
+  --gold:#C9A84C;
+}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;overflow:hidden}
+.deck{width:100%;max-width:960px;aspect-ratio:16/9;position:relative}
+.slide{position:absolute;inset:0;display:none;overflow:hidden;border-radius:4px}
+.slide.active{display:flex;flex-direction:column}
+
+.bg-hero{background:url('https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=1600&q=80&auto=format&fit=crop') center/cover no-repeat}
+.bg-dark{background:var(--bg)}
+.bg-surface{background:var(--surface)}
+.overlay{position:absolute;inset:0;background:linear-gradient(120deg,rgba(1,10,5,0.94) 50%,rgba(2,18,10,0.82) 100%)}
+
+.z1{position:relative;z-index:1;width:100%;height:100%}
+.pad{padding:5.5% 7%}
+.flex{display:flex}.col{flex-direction:column}.row{flex-direction:row}
+.h100{height:100%}
+.w55{width:53%}.w45{width:43%}.w50{width:48%}
+
+.cat-label{font-size:0.9vw;font-weight:700;letter-spacing:0.14em;color:var(--accent-light);text-transform:uppercase;margin-bottom:1%}
+.h1{font-size:3.8vw;font-weight:800;color:var(--white);line-height:1.1;margin-bottom:1.8%}
+.h1 em{font-style:normal;color:var(--accent-light)}
+.h2{font-size:2.4vw;font-weight:800;color:var(--white);line-height:1.15;margin-bottom:1.5%}
+.h3{font-size:1.3vw;font-weight:700;color:var(--white);margin-bottom:0.6%}
+.body{font-size:1.1vw;color:var(--muted);line-height:1.75}
+.body-w{font-size:1.1vw;color:rgba(255,255,255,0.78);line-height:1.75}
+.small{font-size:0.9vw;color:var(--muted);line-height:1.6}
+.accent-line{width:2.5vw;height:3px;background:var(--accent);border-radius:2px;margin-bottom:1.8%}
+
+.slide-logo{position:absolute;top:3%;right:4%;z-index:10;display:flex;align-items:center;gap:0.5vw}
+.sl-text{font-size:0.8vw;font-weight:700;letter-spacing:0.08em;color:rgba(255,255,255,0.6)}
+.sl-sub{font-size:0.6vw;letter-spacing:0.15em;color:var(--gold)}
+
+.badge{display:inline-flex;align-items:center;gap:0.5vw;border:1px solid rgba(46,158,107,0.4);border-radius:20px;padding:0.4% 1.2%;font-size:0.9vw;color:var(--accent-light);font-weight:600;background:rgba(46,158,107,0.08);margin-bottom:1.8%}
+.bdot{width:0.45vw;height:0.45vw;border-radius:50%;background:var(--accent-light);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+
+.card-s{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:2.5% 3%}
+.card-accent{background:rgba(46,158,107,0.07);border:1px solid rgba(46,158,107,0.2);border-radius:12px;padding:2.5% 3%}
+.card-highlight{background:rgba(46,158,107,0.12);border:1px solid rgba(46,158,107,0.3);border-radius:12px;padding:2.5% 3%}
+
+.ico{width:3vw;height:3vw;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.4vw;flex-shrink:0;background:rgba(46,158,107,0.12);border:1px solid rgba(46,158,107,0.25)}
+
+.pill{display:inline-block;font-size:0.75vw;font-weight:700;padding:0.25% 0.8%;border-radius:8px;background:rgba(46,158,107,0.1);color:var(--accent-light);border:1px solid rgba(46,158,107,0.25)}
+
+.chk{display:flex;gap:0.8vw;align-items:flex-start;margin-bottom:1.2%}
+.chk-dot{width:1.1vw;height:1.1vw;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:0.2vw;font-size:0.6vw;color:#fff;font-weight:700}
+
+.vs-bad{background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.2);border-radius:12px;padding:2.5% 3%}
+
+.div{height:1px;background:var(--border);margin:1.5% 0}
+.slide-num{position:absolute;bottom:3%;right:4%;font-size:0.8vw;color:var(--muted);z-index:10}
+
+/* GANTT VISUAL */
+.gantt{display:flex;flex-direction:column;gap:0.6vw;margin-top:1%}
+.gantt-row{display:flex;align-items:center;gap:1vw}
+.gantt-label{font-size:0.8vw;color:var(--muted);width:6vw;text-align:right;flex-shrink:0}
+.gantt-track{flex:1;height:1.4vw;background:var(--surface2);border-radius:4px;overflow:hidden;border:1px solid var(--border)}
+.gantt-bar{height:100%;border-radius:4px;background:var(--accent);opacity:0.85}
+
+.progress{position:fixed;bottom:0;left:0;right:0;height:3px;background:rgba(255,255,255,0.08);z-index:100}
+.pbar{height:100%;background:linear-gradient(90deg,var(--green),var(--accent-light));transition:width 0.4s}
+.controls{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:10px;z-index:100}
+.btn-c{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:var(--white);width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+.btn-c:hover{background:rgba(255,255,255,0.18)}
+.s-counter{font-size:11px;color:var(--muted);min-width:44px;text-align:center}
+.btn-fs{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:var(--white);padding:0 12px;height:34px;border-radius:17px;cursor:pointer;font-size:11px;transition:all 0.2s}
+.btn-fs:hover{background:rgba(255,255,255,0.18)}
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<!-- S1: PORTADA -->
+<div class="slide active bg-hero">
+  <div class="overlay"></div>
+  <div class="z1 pad flex col h100" style="justify-content:space-between">
+    <div style="display:flex;align-items:center;gap:0.8vw">
+      <svg width="28" height="28" viewBox="0 0 34 34" fill="none"><rect width="34" height="34" rx="7" fill="#0A2342"/><polyline points="5,26 5,10 17,21 29,10 29,26" fill="none" stroke="white" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/></svg>
+      <div><div style="font-size:1vw;font-weight:700;letter-spacing:0.08em;color:var(--white)">MÉTRICA</div><div style="font-size:0.65vw;letter-spacing:0.18em;color:var(--gold)">& NEGOCIOS</div></div>
+    </div>
+    <div>
+      <div class="badge"><span class="bdot"></span>Categoría 3 de 4</div>
+      <div style="font-size:1vw;font-weight:700;letter-spacing:0.12em;color:var(--accent-light);text-transform:uppercase;margin-bottom:1%">📋 Gestión & Proyectos</div>
+      <div class="h1">¿Tus proyectos terminan<br>a tiempo y <em>dentro del presupuesto</em>?</div>
+      <div class="body-w" style="max-width:52%;margin-bottom:3%">La mayoría no. Te mostramos cómo gestionar proyectos con metodología internacional, controlar riesgos y tener siempre un panel de control claro de tu negocio.</div>
+      <div class="div" style="max-width:52%"></div>
+      <div style="font-size:0.85vw;color:rgba(255,255,255,0.45);margin-top:1.5%">metricaynegocios.com · 301 392 3580</div>
+    </div>
+    <div style="font-size:0.75vw;color:rgba(255,255,255,0.3)">© 2025 Métrica & Negocios</div>
+  </div>
+  <div class="slide-num">1 / 8</div>
+</div>
+
+<!-- S2: EL PROBLEMA -->
+<div class="slide bg-dark">
+  <div class="slide-logo"><svg width="20" height="20" viewBox="0 0 34 34" fill="none"><rect width="34" height="34" rx="7" fill="#0A2342"/><polyline points="5,26 5,10 17,21 29,10 29,26" fill="none" stroke="white" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/></svg><div><div class="sl-text">MÉTRICA</div><div class="sl-sub">& NEGOCIOS</div></div></div>
+  <div class="z1 pad flex col h100" style="justify-content:center">
+    <div class="cat-label">📋 Gestión & Proyectos</div>
+    <div class="accent-line"></div>
+    <div class="h2">¿Te suena familiar alguna de estas?</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5%;margin-top:1%">
+      <div class="vs-bad flex row" style="gap:1vw;align-items:flex-start">
+        <div style="font-size:1.6vw;margin-top:0.2%">⏰</div>
+        <div><div class="h3" style="font-size:1.05vw;color:#FCA5A5;margin-bottom:0.4%">"Mis proyectos siempre se atrasan"</div><div class="small">Empezamos con buenas intenciones pero a mitad del camino todo se descontrola y los plazos se vuelan.</div></div>
+      </div>
+      <div class="vs-bad flex row" style="gap:1vw;align-items:flex-start">
+        <div style="font-size:1.6vw;margin-top:0.2%">💰</div>
+        <div><div class="h3" style="font-size:1.05vw;color:#FCA5A5;margin-bottom:0.4%">"Siempre me gasto más de lo presupuestado"</div><div class="small">El proyecto arrancó con un costo estimado pero al final terminamos pagando el doble o más.</div></div>
+      </div>
+      <div class="vs-bad flex row" style="gap:1vw;align-items:flex-start">
+        <div style="font-size:1.6vw;margin-top:0.2%">😵</div>
+        <div><div class="h3" style="font-size:1.05vw;color:#FCA5A5;margin-bottom:0.4%">"No sé cómo está mi negocio en este momento"</div><div class="small">Para saber cómo van las ventas o los gastos tengo que preguntarle a varias personas o buscar en varios archivos.</div></div>
+      </div>
+      <div class="vs-bad flex row" style="gap:1vw;align-items:flex-start">
+        <div style="font-size:1.6vw;margin-top:0.2%">🎲</div>
+        <div><div class="h3" style="font-size:1.05vw;color:#FCA5A5;margin-bottom:0.4%">"Los imprevistos me desequilibran todo"</div><div class="small">Cuando algo sale mal no hay un plan B. Los problemas nos toman por sorpresa y reaccionamos tarde.</div></div>
+      </div>
+    </div>
+    <div class="card-accent flex row" style="gap:1vw;align-items:center;margin-top:2%">
+      <div style="font-size:1.8vw">💡</div>
+      <div class="body-w" style="font-size:1vw">Estos problemas no son de mala suerte — son de falta de metodología. <strong style="color:var(--white)">Con las herramientas correctas, los proyectos se controlan y los imprevistos dejan de ser una sorpresa.</strong></div>
+    </div>
+  </div>
+  <div class="slide-num">2 / 8</div>
+</div>
+
+<!-- S3: SERVICIO 1 — PMI -->
+<div class="slide bg-surface">
+  <div class="slide-logo"><svg width="20" height="20" viewBox="0 0 34 34" fill="none"><rect width="34" height="34" rx="7" fill="#0A2342"/><polyline points="5,26 5,10 17,21 29,10 29,26" fill="none" stroke="white" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/></svg><div><div class="sl-text">MÉTRICA</div><div class="sl-sub">& NEGOCIOS</div></div></div>
+  <div class="z1 pad flex col h100" style="justify-content:center">
+    <div class="flex row" style="align-items:center;gap:1vw;margin-bottom:0.8%">
+      <div class="ico">🗂️</div>
+      <div class="cat-label" style="margin:0">Servicio 1 — Gestión de proyectos con estándares PMI</div>
+    </div>
+    <div class="accent-line"></div>
+    <div class="flex row" style="gap:4%;align-items:flex-start">
+      <div class="w55">
+        <div class="h2" style="font-size:2vw;margin-bottom:1.5%">¿Qué es PMI y por qué<br>le importa a tu negocio?</div>
+        <div class="body" style="margin-bottom:1.5%">PMI es el estándar de gestión de proyectos más reconocido del mundo. Básicamente es <strong style="color:var(--white)">un manual de cómo hacer las cosas bien</strong> — con un plan claro, tiempos definidos, responsables asignados y seguimiento constante.</div>
+        <div class="body" style="margin-bottom:2%">No importa si tu proyecto es construir una bodega, lanzar un producto o implementar un sistema — con esta metodología sabes exactamente dónde estás en cada momento.</div>
+        <div class="div"></div>
+        <div style="margin-top:1.5%">
+          <div class="chk"><div class="chk-dot">✓</div><div class="small"><strong style="color:var(--white)">Cronograma detallado</strong> — Cada tarea, cada responsable, cada fecha. Sin ambigüedad.</div></div>
+          <div class="chk"><div class="chk-dot">✓</div><div class="small"><strong style="color:var(--white)">Control de costos en tiempo real</strong> — Sabes cuánto llevas gastado y cuánto falta antes de que sea tarde.</div></div>
+          <div class="chk"><div class="chk-dot">✓</div><div class="small"><strong style="color:var(--white)">Informes gerenciales claros</strong> — No más "cómo vamos" a ojo. Datos reales para tomar decisiones.</div></div>
+        </div>
+      </div>
+      <div class="w45 flex col" style="gap:1.5%">
+        <div class="card-s" style="padding:2% 2.5%">
+          <div style="font-size:0.8vw;font-weight:700;color:var(--accent-light);letter-spacing:0.1em;margin-bottom:1.2%">ASÍ SE VE UN PROYECTO CONTROLADO</div>
+          <div class="gantt">
+            <div class="gantt-row"><span class="gantt-label">Planeación</span><div class="gantt-track"><div class="gantt-bar" style="width:30%"></div></div></div>
+            <div class="gantt-row"><span class="gantt-label">Ejecución</span><div class="gantt-track"><div class="gantt-bar" style="width:60%;margin-left:25%"></div></div></div>
+            <div class="gantt-row"><span class="gantt-label">Control</span><div class="gantt-track"><div class="gantt-bar" style="width:55%;margin-left:22%;background:var(--gold);opacity:0.7"></div></div></div>
+            <div class="gantt-row"><span class="gantt-label">Cierre</span><div class="gantt-track"><div class="gantt-bar" style="width:15%;margin-left:80%"></div></div></div>
+          </div>
+          <div class="small" style="margin-top:1%;color:rgba(255,255,255,0.4);font-size:0.7vw">Diagrama de Gantt — herramienta clave de gestión PMI</div>
+        </div>
+        <div class="card-highlight" style="text-align:center">
+          <div style="font-size:1.6vw;margin-bottom:0.5%">🗂️</div>
+          <div class="small" style="color:var(--accent-light);font-weight:600">Entregable típico</div>
+          <div class="small">Plan de proyecto completo con cronograma, presupuesto, responsables e informes de seguimiento.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">3 / 8</div>
+</div>
+
+<!-- S4: SERVICIO 2 — RIESGOS -->
+<div class="slide bg-dark">
+  <div class="slide-logo"><svg width="20" height="20" viewBox="0 0 34 34" fill="none"><rect width="34" height="34" rx="7" fill="#0A2342"/><polyline points="5,26 5,10 17,21 29,10 29,26" fill="none" stroke="white" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/></svg><div><div class="sl-text">MÉTRICA</div><div class="sl-sub">& NEGOCIOS</div></div></div>
+  <div class="z1 pad flex col h100" style="justify-content:center">
+    <div class="flex row" style="align-items:center;gap:1vw;margin-bottom:0.8%">
+      <div class="ico">🛡️</div>
+      <div class="cat-label" style="margin:0">Servicio 2 — Gestión de riesgos</div>
+    </div>
+    <div class="accent-line"></div>
+    <div class="flex row" style="gap:4%;align-items:flex-start">
+      <div class="w55">
+        <div class="h2" style="font-size:2vw;margin-bottom:1.5%">Los problemas no avisan —<br>pero se pueden anticipar</div>
+        <div class="body" style="margin-bottom:1.5%">Todo proyecto y todo negocio tiene riesgos. La pregunta no es <em style="color:var(--white)">"¿me va a pasar algo malo?"</em> sino <strong style="color:var(--white)">"¿qué tan preparado estoy cuando pase?"</strong></div>
+        <div class="body" style="margin-bottom:2%">Usamos análisis estadísticos para identificar qué puede salir mal, qué tan probable es y cuánto te costaría — antes de que ocurra. Así puedes actuar con anticipación en lugar de apagar incendios.</div>
+        <div class="div"></div>
+        <div style="margin-top:1.5%">
+          <div class="chk"><div class="chk-dot">✓</div><div class="small"><strong style="color:var(--white)">Identificamos los riesgos de tu operación</strong> — Financieros, operativos, de mercado, legales.</div></div>
+          <div class="chk"><div class="chk-dot">✓</div><div class="small"><strong style="color:var(--white)">Te decimos cuáles son los más críticos</strong> — No todos los riesgos son iguales. Priorizamos los que más impacto tienen.</div></div>
+          <div class="chk"><div class="chk-dot">✓</div><div class="small"><strong style="color:var(--white)">Diseñamos el plan de respuesta</strong> — Qué hacer si el riesgo se materializa, para no improvisar bajo presión.</div></div>
+        </div>
+      </div>
+      <div class="w45 flex col" style="gap:1.5%">
+        <div class="card-s flex col" style="gap:1%">
+          <div style="font-size:0.85vw;font-weight:700;color:var(--accent-light);letter-spacing:0.08em;margin-bottom:0.5%">EJEMPLO COTIDIANO</div>
+          <div class="small" style="margin-bottom:0.8%">Imagina que tu único proveedor clave falla. ¿Tienes un plan B? ¿Sabes cuánto tiempo puedes operar sin él? ¿Cuánto te costaría ese escenario?</div>
+          <div class="small" style="color:rgba(255,255,255,0.7)">Con gestión de riesgos, <strong style="color:var(--white)">ya tienes las respuestas antes de que el problema llegue.</strong></div>
+        </div>
+        <div class="card-s flex col" style="gap:0.8%">
+          <div style="font-size:0.85vw;font-weight:700;color:var(--gold);letter-spacing:0.08em;margin-bottom:0.5%">NIVELES DE RIESGO</div>
+          <div style="display:flex;flex-direction:column;gap:0.5vw">
+            <div style="display:flex;align-items:center;gap:0.8vw"><div style="width:0.8vw;height:0.8vw;border-radius:50%;background:#ef4444;flex-shrink:0"></div><div class="small">Alto — Requiere acción inmediata</div></div>
+            <div style="display:flex;align-items:center;gap:0.8vw"><div style="width:0.8vw;height:0.8vw;border-radius:50%;background:#f59e0b;flex-shrink:0"></div><div class="small">Medio — Monitoreo continuo</div></div>
+            <div style="display:flex;align-items:center;gap:0.8vw"><div style="width:0.8vw;height:0.8vw;border-radius:50%;background:var(--accent-light);flex-shrink:0"></div><div class="small">Bajo — Aceptable con seguimiento</div></div>
+          </div>
+        </div>
+        <div class="card-highlight" style="text-align:center">
+          <div style="font-size:1.6vw;margin-bottom:0.5%">🛡️</div>
+          <div class="small" style="color:var(--accent-light);font-weight:600">Entregable típico</div>
+          <div class="small">Matriz de riesgos priorizada con plan de respuesta y estrategias de mitigación por escenario.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">4 / 8</div>
+</div>
+
+<!-- S5: SERVICIO 3 — DASHBOARDS -->
+<div class="slide bg-surface">
+  <div class="slide-logo"><svg width="20" height="20" viewBox="0 0 34 34" fill="none"><rect width="34" height="34" rx="7" fill="#0A2342"/><polyline points="5,26 5,10 17,21 29,10 29,26" fill="none" stroke="white" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/></svg><div><div class="sl-text">MÉTRICA</div><div class="sl-sub">& NEGOCIOS</div></div></div>
+  <div class="z1 pad flex col h100" style="justify-content:center">
+    <div class="flex row" style="align-items:center;gap:1vw;margin-bottom:0.8%">
+      <div class="ico">📊</div>
+      <div class="cat-label" style="margin:0">Servicio 3 — Dashboards e inteligencia de negocio</div>
+    </div>
+    <div class="accent-line"></div>
+    <div class="flex row" style="gap:4%;align-items:flex-start">
+      <div class="w55">
+        <div class="h2" style="font-size:2vw;margin-bottom:1.5%">Tu negocio en un solo<br>vistazo, en tiempo real</div>
+        <div class="body" style="margin-bottom:1.5%">Un dashboard es como el <strong style="color:var(--white)">tablero de un avión</strong>: te muestra en un solo lugar todo lo que necesitas saber para volar con seguridad. Velocidad, altitud, combustible... en tu negocio sería ventas, gastos, margen, clientes.</div>
+        <div class="body" style="margin-bottom:2%">En vez de preguntar "¿cómo vamos?" y esperar respuesta, lo ves tú mismo — actualizado, claro y sin necesidad de ser experto en tecnología.</div>
+        <div class="div"></div>
+        <div style="margin-top:1.5%">
+          <div class="chk"><div class="chk-dot">✓</div><div class="small"><strong style="color:var(--white)">Indicadores clave de tu negocio</strong> — Ventas, costos, rentabilidad, cumplimiento de metas.</div></div>
+          <div class="chk"><div class="chk-dot">✓</div><div class="small"><strong style="color:var(--white)">Alertas automáticas</strong> — El sistema te avisa cuando algo se sale de lo normal, sin que tengas que buscarlo.</div></div>
+          <div class="chk"><div class="chk-dot">✓</div><div class="small"><strong style="color:var(--white)">Lo usas desde el día uno</strong> — Diseñado para que cualquier persona del equipo lo entienda y use sin capacitación especial.</div></div>
+        </div>
+      </div>
+      <div class="w45 flex col" style="gap:1.2%">
+        <div class="card-s" style="padding:2% 2.5%">
+          <div style="font-size:0.8vw;font-weight:700;color:var(--accent-light);letter-spacing:0.1em;margin-bottom:1.2%">EJEMPLO DE DASHBOARD</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8vw;margin-bottom:1vw">
+            <div style="background:var(--bg);border-radius:8px;padding:1vw;border:1px solid var(--border)">
+              <div style="font-size:1.4vw;font-weight:800;color:#4CAF50">+18%</div>
+              <div style="font-size:0.7vw;color:var(--muted)">Ventas vs mes ant.</div>
+            </div>
+            <div style="background:var(--bg);border-radius:8px;padding:1vw;border:1px solid var(--border)">
+              <div style="font-size:1.4vw;font-weight:800;color:var(--accent-light)">92%</div>
+              <div style="font-size:0.7vw;color:var(--muted)">Meta cumplida</div>
+            </div>
+            <div style="background:var(--bg);border-radius:8px;padding:1vw;border:1px solid var(--border)">
+              <div style="font-size:1.4vw;font-weight:800;color:var(--gold)">$8.4M</div>
+              <div style="font-size:0.7vw;color:var(--muted)">Margen bruto</div>
+            </div>
+            <div style="background:var(--bg);border-radius:8px;padding:1vw;border:1px solid var(--border)">
+              <div style="font-size:1.4vw;font-weight:800;color:#ef4444">⚠️ 2</div>
+              <div style="font-size:0.7vw;color:var(--muted)">Alertas activas</div>
+            </div>
+          </div>
+          <div style="height:1.8vw;background:var(--bg);border-radius:4px;overflow:hidden;border:1px solid var(--border);display:flex;align-items:center;gap:0">
+            <div style="height:100%;width:55%;background:var(--accent);opacity:0.8"></div>
+            <div style="height:100%;width:25%;background:var(--gold);opacity:0.7"></div>
+            <div style="height:100%;width:20%;background:#ef4444;opacity:0.5"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:0.4vw"><span style="font-size:0.65vw;color:var(--muted)">Productos A</span><span style="font-size:0.65vw;color:var(--muted)">Productos B</span><span style="font-size:0.65vw;color:var(--muted)">Otros</span></div>
+        </div>
+        <div class="card-highlight" style="text-align:center">
+          <div style="font-size:1.6vw;margin-bottom:0.5%">📊</div>
+          <div class="small" style="color:var(--accent-light);font-weight:600">Entregable típico</div>
+          <div class="small">Dashboard interactivo en Power BI o Excel con los indicadores clave de tu negocio, listo para usar.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">5 / 8</div>
+</div>
+
+<!-- S6: LOS TRES SERVICIOS CONECTADOS -->
+<div class="slide bg-dark">
+  <div class="slide-logo"><svg width="20" height="20" viewBox="0 0 34 34" fill="none"><rect width="34" height="34" rx="7" fill="#0A2342"/><polyline points="5,26 5,10 17,21 29,10 29,26" fill="none" stroke="white" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/></svg><div><div class="sl-text">MÉTRICA</div><div class="sl-sub">& NEGOCIOS</div></div></div>
+  <div class="z1 pad flex col h100" style="justify-content:center">
+    <div class="cat-label">¿Cómo se conectan?</div>
+    <div class="accent-line"></div>
+    <div class="h2" style="margin-bottom:2.5%">Los tres servicios trabajan juntos</div>
+    <div class="flex row" style="gap:2%;align-items:center">
+      <div class="card-s w50" style="padding:3%">
+        <div style="display:flex;flex-direction:column;gap:2%">
+          <div class="flex row" style="gap:1vw;align-items:center">
+            <div class="ico" style="width:2.5vw;height:2.5vw;font-size:1.1vw">🗂️</div>
+            <div><div class="h3" style="font-size:1.05vw">Gestión PMI</div><div class="small">Define el plan y lo ejecuta bien</div></div>
+          </div>
+          <div style="text-align:center;font-size:1.5vw;color:var(--accent-light)">↓</div>
+          <div class="flex row" style="gap:1vw;align-items:center">
+            <div class="ico" style="width:2.5vw;height:2.5vw;font-size:1.1vw">🛡️</div>
+            <div><div class="h3" style="font-size:1.05vw">Gestión de riesgos</div><div class="small">Anticipa los problemas que pueden desviar el plan</div></div>
+          </div>
+          <div style="text-align:center;font-size:1.5vw;color:var(--accent-light)">↓</div>
+          <div class="flex row" style="gap:1vw;align-items:center">
+            <div class="ico" style="width:2.5vw;height:2.5vw;font-size:1.1vw">📊</div>
+            <div><div class="h3" style="font-size:1.05vw">Dashboard</div><div class="small">Muestra en tiempo real si todo va según lo planeado</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="w50 flex col" style="gap:1.5%">
+        <div class="card-accent">
+          <div style="font-size:0.85vw;font-weight:700;color:var(--accent-light);letter-spacing:0.08em;margin-bottom:1%">EL CICLO COMPLETO</div>
+          <div class="small" style="color:rgba(255,255,255,0.8)">Planeas bien con PMI → identificas los riesgos antes de que sucedan → y monitoreas todo en tiempo real desde tu dashboard. <strong style="color:var(--white)">Es la diferencia entre reaccionar y liderar.</strong></div>
+        </div>
+        <div class="card-s">
+          <div style="font-size:0.85vw;font-weight:700;color:var(--gold);letter-spacing:0.08em;margin-bottom:1%">¿PUEDO CONTRATAR SOLO UNO?</div>
+          <div class="small">Sí. Cada servicio funciona de manera independiente. Pero cuando los combinas, el resultado es mucho más potente — tu negocio pasa de operar en modo reactivo a operar en modo estratégico.</div>
+        </div>
+        <div class="card-highlight" style="text-align:center">
+          <div class="body-w" style="font-size:1vw">"Lo que no se mide,<br>no se puede mejorar."</div>
+          <div class="small" style="margin-top:0.5%;color:var(--accent-light)">— Peter Drucker</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">6 / 8</div>
+</div>
+
+<!-- S7: CÓMO TRABAJAMOS -->
+<div class="slide bg-surface">
+  <div class="slide-logo"><svg width="20" height="20" viewBox="0 0 34 34" fill="none"><rect width="34" height="34" rx="7" fill="#0A2342"/><polyline points="5,26 5,10 17,21 29,10 29,26" fill="none" stroke="white" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/></svg><div><div class="sl-text">MÉTRICA</div><div class="sl-sub">& NEGOCIOS</div></div></div>
+  <div class="z1 pad flex col h100" style="justify-content:center">
+    <div class="cat-label">¿Cómo trabajamos?</div>
+    <div class="accent-line"></div>
+    <div class="h2" style="margin-bottom:3%">Del caos al control en 4 pasos</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:2%">
+      <div class="card-s flex col" style="align-items:center;text-align:center;gap:1.2%;padding:3% 2%">
+        <div style="width:2.8vw;height:2.8vw;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:1.1vw;font-weight:800;color:#fff">1</div>
+        <div style="font-size:1.8vw;margin:0.5% 0">🔍</div>
+        <div class="h3" style="font-size:1.05vw">Diagnóstico</div>
+        <div class="small" style="text-align:center">Entendemos cómo gestionas hoy tus proyectos y dónde están los cuellos de botella.</div>
+      </div>
+      <div class="card-s flex col" style="align-items:center;text-align:center;gap:1.2%;padding:3% 2%">
+        <div style="width:2.8vw;height:2.8vw;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:1.1vw;font-weight:800;color:#fff">2</div>
+        <div style="font-size:1.8vw;margin:0.5% 0">🗺️</div>
+        <div class="h3" style="font-size:1.05vw">Planeación</div>
+        <div class="small" style="text-align:center">Construimos el plan de proyecto con cronograma, presupuesto y mapa de riesgos.</div>
+      </div>
+      <div class="card-s flex col" style="align-items:center;text-align:center;gap:1.2%;padding:3% 2%">
+        <div style="width:2.8vw;height:2.8vw;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:1.1vw;font-weight:800;color:#fff">3</div>
+        <div style="font-size:1.8vw;margin:0.5% 0">📊</div>
+        <div class="h3" style="font-size:1.05vw">Dashboard</div>
+        <div class="small" style="text-align:center">Configuramos tu panel de control para que veas el avance en tiempo real desde cualquier dispositivo.</div>
+      </div>
+      <div class="card-s flex col" style="align-items:center;text-align:center;gap:1.2%;padding:3% 2%">
+        <div style="width:2.8vw;height:2.8vw;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:1.1vw;font-weight:800;color:#fff">4</div>
+        <div style="font-size:1.8vw;margin:0.5% 0">🔄</div>
+        <div class="h3" style="font-size:1.05vw">Seguimiento</div>
+        <div class="small" style="text-align:center">Revisiones periódicas para ajustar el plan según la realidad del proyecto.</div>
+      </div>
+    </div>
+    <div class="card-accent flex row" style="gap:1vw;align-items:center;margin-top:3%">
+      <div style="font-size:1.8vw">🤝</div>
+      <div class="body-w" style="font-size:1vw">No necesitas saber de gestión de proyectos ni de tecnología — <strong style="color:var(--white)">nosotros traemos la metodología y tú traes el conocimiento de tu negocio.</strong> Juntos hacemos que funcione.</div>
+    </div>
+  </div>
+  <div class="slide-num">7 / 8</div>
+</div>
+
+<!-- S8: CIERRE -->
+<div class="slide bg-hero">
+  <div class="overlay"></div>
+  <div class="z1 pad flex col h100" style="justify-content:space-between">
+    <div style="display:flex;align-items:center;gap:0.8vw">
+      <svg width="28" height="28" viewBox="0 0 34 34" fill="none"><rect width="34" height="34" rx="7" fill="#0A2342"/><polyline points="5,26 5,10 17,21 29,10 29,26" fill="none" stroke="white" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/></svg>
+      <div><div style="font-size:1vw;font-weight:700;letter-spacing:0.08em;color:var(--white)">MÉTRICA</div><div style="font-size:0.65vw;letter-spacing:0.18em;color:var(--gold)">& NEGOCIOS</div></div>
+    </div>
+    <div style="max-width:55%">
+      <div class="cat-label">📋 Gestión & Proyectos</div>
+      <div class="h1" style="font-size:3.2vw;margin-bottom:2%">¿Listo para tener tus<br>proyectos <em>bajo control</em>?</div>
+      <div class="body-w" style="margin-bottom:3%">Agendemos una consulta. Revisamos cómo gestionas hoy tus proyectos y te mostramos cómo mejorar resultados con metodología clara.</div>
+      <div class="flex col" style="gap:1%">
+        <div class="flex row" style="align-items:center;gap:0.8vw"><div style="font-size:1.2vw">📞</div><div class="body-w">301 392 3580</div></div>
+        <div class="flex row" style="align-items:center;gap:0.8vw"><div style="font-size:1.2vw">✉️</div><div class="body-w">directorcomercial@metricaynegocios.com</div></div>
+        <div class="flex row" style="align-items:center;gap:0.8vw"><div style="font-size:1.2vw">🌐</div><div class="body-w">metricaynegocios.com</div></div>
+      </div>
+    </div>
+    <div style="font-size:0.75vw;color:rgba(255,255,255,0.3)">© 2025 Métrica & Negocios · Medellín, Colombia</div>
+  </div>
+  <div class="slide-num">8 / 8</div>
+</div>
+
+</div>
+
+<div class="progress"><div class="pbar" id="pbar" style="width:12.5%"></div></div>
+<div class="controls">
+  <button class="btn-c" onclick="nav(-1)">&#8592;</button>
+  <span class="s-counter" id="counter">1 / 8</span>
+  <button class="btn-c" onclick="nav(1)">&#8594;</button>
+  <button class="btn-fs" onclick="toggleFS()">⛶ Pantalla completa</button>
+</div>
+
+<script>
+const slides=document.querySelectorAll('.slide');
+const total=slides.length;
+let cur=0;
+function show(n){slides[cur].classList.remove('active');cur=(n+total)%total;slides[cur].classList.add('active');document.getElementById('counter').textContent=(cur+1)+' / '+total;document.getElementById('pbar').style.width=((cur+1)/total*100)+'%';}
+function nav(d){show(cur+d)}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowDown')nav(1);if(e.key==='ArrowLeft'||e.key==='ArrowUp')nav(-1);});
+let tx=0;
+document.querySelector('.deck').addEventListener('touchstart',e=>tx=e.touches[0].clientX);
+document.querySelector('.deck').addEventListener('touchend',e=>{const dx=tx-e.changedTouches[0].clientX;if(Math.abs(dx)>40)nav(dx>0?1:-1);});
+function toggleFS(){if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen();}
+</script>
+</body>
+</html>
