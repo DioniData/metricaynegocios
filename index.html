@@ -515,7 +515,7 @@ async function sendForm(){
   const btn=document.getElementById('btn-send');
   btn.textContent='Enviando...';btn.disabled=true;
   try{
-    const res=await fetch('https://formspree.io/f/YOUR_FORM_ID',{
+    const res=await fetch('https://formspree.io/f/mnjljlbe',{
       method:'POST',
       headers:{'Content-Type':'application/json','Accept':'application/json'},
       body:JSON.stringify({nombre:n,empresa:c,correo:e,servicio:s,mensaje:m})
