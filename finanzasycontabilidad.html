@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Finanzas & Contabilidad — Métrica & Negocios</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0D0A00;--surface:#1A1400;--surface2:#221C00;--border:#3A3000;
+  --gold:#C9A84C;--gold-light:#E8C56A;--gold-pale:#FFF8E7;
+  --text:#F0F0F0;--muted:#A89060;--white:#fff;
+  --accent:#C9A84C;--accent-light:#E8C56A;
+}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;overflow:hidden}
+.deck{width:100%;max-width:960px;aspect-ratio:16/9;position:relative}
+.slide{position:absolute;inset:0;display:none;overflow:hidden;border-radius:4px}
+.slide.active{display:flex;flex-direction:column}
+
+.bg-hero{background:url('https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1600&q=80&auto=format&fit=crop') center/cover no-repeat}
+.bg-dark{background:var(--bg)}
+.bg-surface{background:var(--surface)}
+.overlay{position:absolute;inset:0;background:linear-gradient(120deg,rgba(10,7,0,0.94) 50%,rgba(20,14,0,0.82) 100%)}
+
+.z1{position:relative;z-index:1;width:100%;height:100%}
+.pad{padding:5.5% 7%}
+.flex{display:flex}.col{flex-direction:column}.row{flex-direction:row}
+.h100{height:100%}
+.w55{width:53%}.w45{width:43%}.w50{width:48%}
+
+.cat-label{font-size:0.9vw;font-weight:700;letter-spacing:0.14em;color:var(--accent-light);text-transform:uppercase;margin-bottom:1%}
+.h1{font-size:3.8vw;font-weight:800;color:var(--white);line-height:1.1;margin-bottom:1.8%}
+.h1 em{font-style:normal;color:var(--accent-light)}
+.h2{font-size:2.4vw;font-weight:800;color:var(--white);line-height:1.15;margin-bottom:1.5%}
+.h3{font-size:1.3vw;font-weight:700;color:var(--white);margin-bottom:0.6%}
+.body{font-size:1.1vw;color:var(--muted);line-height:1.75}
+.body-w{font-size:1.1vw;color:rgba(255,255,255,0.78);line-height:1.75}
+.small{font-size:0.9vw;color:var(--muted);line-height:1.6}
+.accent-line{width:2.5vw;height:3px;background:var(--accent);border-radius:2px;margin-bottom:1.8%}
+
+.slide-logo{position:absolute;top:3%;right:4%;z-index:10;display:flex;align-items:center;gap:0.5vw}
+.sl-text{font-size:0.8vw;font-weight:700;letter-spacing:0.08em;color:rgba(255,255,255,0.6)}
+.sl-sub{font-size:0.6vw;letter-spacing:0.15em;color:var(--gold)}
+
+.badge{display:inline-flex;align-items:center;gap:0.5vw;border:1px solid rgba(201,168,76,0.4);border-radius:20px;padding:0.4% 1.2%;font-size:0.9vw;color:var(--accent-light);font-weight:600;background:rgba(201,168,76,0.08);margin-bottom:1.8%}
+.bdot{width:0.45vw;height:0.45vw;border-radius:50%;background:var(--accent-light);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+
+.card-s{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:2.5% 3%}
+.card-accent{background:rgba(201,168,76,0.07);border:1px solid rgba(201,168,76,0.2);border-radius:12px;padding:2.5% 3%}
+.card-highlight{background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.3);border-radius:12px;padding:2.5% 3%}
+.card-glass{background:rgba(20,14,0,0.75);border:1px solid rgba(201,168,76,0.15);border-radius:12px;padding:2.5% 3%;backdrop-filter:blur(8px)}
+
+.ico{width:3vw;height:3vw;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.4vw;flex-shrink:0;background:rgba(201,168,76,0.12);border:1px solid rgba(201,168,76,0.25)}
+
+.pill{display:inline-block;font-size:0.75vw;font-weight:700;padding:0.25% 0.8%;border-radius:8px;background:rgba(201,168,76,0.1);color:var(--accent-light);border:1px solid rgba(201,168,76,0.25)}
+
+.chk{display:flex;gap:0.8vw;align-items:flex-start;margin-bottom:1.2%}
+.chk-dot{width:1.1vw;height:1.1vw;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:0.2vw;font-size:0.6vw;color:#000;font-weight:700}
+
+.vs-bad{background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.2);border-radius:12px;padding:2.5% 3%}
+.vs-good{background:rgba(201,168,76,0.07);border:1px solid rgba(201,168,76,0.2);border-radius:12px;padding:2.5% 3%}
+
+.div{height:1px;background:var(--border);margin:1.5% 0}
+.slide-num{position:absolute;bottom:3%;right:4%;font-size:0.8vw;color:var(--muted);z-index:10}
+
+.progress{position:fixed;bottom:0;left:0;right:0;height:3px;background:rgba(255,255,255,0.08);z-index:100}
+.pbar{height:100%;background:linear-gradient(90deg,var(--gold),var(--accent-light));transition:width 0.4s}
+.controls{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:10px;z-index:100}
+.btn-c{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:var(--white);width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+.btn-c:hover{background:rgba(255,255,255,0.18)}
+.s-counter{font-size:11px;color:var(--muted);min-width:44px;text-align:center}
+.btn-fs{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:var(--white);padding:0 12px;height:34px;border-radius:17px;cursor:pointer;font-size:11px;transition:all 0.2s}
+.btn-fs:hover{background:rgba(255,255,255,0.18)}
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<!-- S1: PORTADA -->
+<div class="slide active bg-hero">
+  <div class="overlay"></div>
+  <div class="z1 pad flex col h100" style="justify-content:space-between">
+    <div style="display:flex;align-items:center;gap:0.8vw">
+      <svg width="28" height="28" viewBox="0 0 34 34" fill="none"><rect width="34" height="34" rx="7" fill="#0A2342"/><polyline points="5,26 5,10 17,21 29,10 29,26" fill="none" stroke="white" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/></svg>
+      <div><div style="font-size:1vw;font-weight:700;letter-spacing:0.08em;color:var(--white)">MÉTRICA</div><div style="font-size:0.65vw;letter-spacing:0.18em;color:var(--gold)">& NEGOCIOS</div></div>
+    </div>
+    <div>
+      <div class="badge"><span class="bdot"></span>Categoría 2 de 4</div>
+      <div style="font-size:1vw;font-weight:700;letter-spacing:0.12em;color:var(--accent-light);text-transform:uppercase;margin-bottom:1%">💰 Finanzas & Contabilidad</div>
+      <div class="h1">¿Sabes realmente<br>cuánto <em>gana</em> tu negocio?</div>
+      <div class="body-w" style="max-width:52%;margin-bottom:3%">Tener ventas no es lo mismo que tener rentabilidad. Te ayudamos a ordenar tus finanzas, cumplir con el fisco y pagar solo lo que debes — ni un peso más.</div>
+      <div class="div" style="max-width:52%"></div>
+      <div style="font-size:0.85vw;color:rgba(255,255,255,0.45);margin-top:1.5%">metricaynegocios.com · 301 392 3580</div>
+    </div>
+    <div style="font-size:0.75vw;color:rgba(255,255,255,0.3)">© 2025 Métrica & Negocios</div>
+  </div>
+  <div class="slide-num">1 / 7</div>
+</div>
+
+<!-- S2: EL PROBLEMA -->
+<div class="slide bg-dark">
+  <div class="slide-logo"><svg width="20" height="20" viewBox="0 0 34 34" fill="none"><rect width="34" height="34" rx="7" fill="#0A2342"/><polyline points="5,26 5,10 17,21 29,10 29,26" fill="none" stroke="white" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/></svg><div><div class="sl-text">MÉTRICA</div><div class="sl-sub">& NEGOCIOS</div></div></div>
+  <div class="z1 pad flex col h100" style="justify-content:center">
+    <div class="cat-label">💰 Finanzas & Contabilidad</div>
+    <div class="accent-line"></div>
+    <div class="h2">La realidad financiera de muchas empresas</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5%;margin-top:1%">
+      <div class="vs-bad flex row" style="gap:1vw;align-items:flex-start">
+        <div style="font-size:1.6vw;margin-top:0.2%">😟</div>
+        <div><div class="h3" style="font-size:1.05vw;color:#FCA5A5;margin-bottom:0.4%">"Vendo bien pero no sé a dónde va la plata"</div><div class="small">Las ventas entran, los gastos salen, y al final del mes no queda lo que debería quedar.</div></div>
+      </div>
+      <div class="vs-bad flex row" style="gap:1vw;align-items:flex-start">
+        <div style="font-size:1.6vw;margin-top:0.2%">😰</div>
+        <div><div class="h3" style="font-size:1.05vw;color:#FCA5A5;margin-bottom:0.4%">"La DIAN me asusta"</div><div class="small">No tengo claro qué debo declarar, cuándo, ni cómo evitar sanciones. El tema tributario me genera ansiedad.</div></div>
+      </div>
+      <div class="vs-bad flex row" style="gap:1vw;align-items:flex-start">
+        <div style="font-size:1.6vw;margin-top:0.2%">📋</div>
+        <div><div class="h3" style="font-size:1.05vw;color:#FCA5A5;margin-bottom:0.4%">"Mi contabilidad está desactualizada"</div><div class="small">Los registros no están al día, mezclo gastos personales con los del negocio y no tengo estados financieros claros.</div></div>
+      </div>
+      <div class="vs-bad flex row" style="gap:1vw;align-items:flex-start">
+        <div style="font-size:1.6vw;margin-top:0.2%">💸</div>
+        <div><div class="h3" style="font-size:1.05vw;color:#FCA5A5;margin-bottom:0.4%">"Pago muchos impuestos"</div><div class="small">Siento que le pago demasiado al Estado, pero no sé si hay formas legales de reducir esa carga.</div></div>
+      </div>
+    </div>
+    <div class="card-accent flex row" style="gap:1vw;align-items:center;margin-top:2%">
+      <div style="font-size:1.8vw">💡</div>
+      <div class="body-w" style="font-size:1vw">Estos problemas son más comunes de lo que crees — y todos tienen solución. <strong style="color:var(--white)">Un negocio con las finanzas ordenadas crece más rápido y con menos riesgo.</strong></div>
+    </div>
+  </div>
+  <div class="slide-num">2 / 7</div>
+</div>
+
+<!-- S3: SERVICIO 1 — CONTABLE Y FISCAL -->
+<div class="slide bg-surface">
+  <div class="slide-logo"><svg width="20" height="20" viewBox="0 0 34 34" fill="none"><rect width="34" height="34" rx="7" fill="#0A2342"/><polyline points="5,26 5,10 17,21 29,10 29,26" fill="none" stroke="white" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/></svg><div><div class="sl-text">MÉTRICA</div><div class="sl-sub">& NEGOCIOS</div></div></div>
+  <div class="z1 pad flex col h100" style="justify-content:center">
+    <div class="flex row" style="align-items:center;gap:1vw;margin-bottom:0.8%">
+      <div class="ico">🧾</div>
+      <div class="cat-label" style="margin:0">Servicio 1 — Asesoría contable y fiscal</div>
+    </div>
+    <div class="accent-line"></div>
+    <div class="flex row" style="gap:4%;align-items:flex-start">
+      <div class="w55">
+        <div class="h2" style="font-size:2vw;margin-bottom:1.5%">Tu contabilidad al día,<br>sin sorpresas con el fisco</div>
+        <div class="body" style="margin-bottom:1.5%">La contabilidad no es solo un requisito legal — es el <strong style="color:var(--white)">termómetro de tu negocio</strong>. Con registros precisos y actualizados sabes exactamente cómo está tu empresa en todo momento.</div>
+        <div class="body" style="margin-bottom:2%">Y con una asesoría fiscal adecuada, cumples con la DIAN sin sobresaltos y sin pagar de más.</div>
+        <div class="div"></div>
+        <div style="margin-top:1.5%">
+          <div class="chk"><div class="chk-dot">✓</div><div class="small"><strong style="color:var(--white)">Registros financieros al día</strong> — Ingresos, egresos, balances y estados de resultados siempre actualizados.</div></div>
+          <div class="chk"><div class="chk-dot">✓</div><div class="small"><strong style="color:var(--white)">Declaraciones sin errores</strong> — IVA, renta, retenciones y todo lo que exige la DIAN, en los tiempos correctos.</div></div>
+          <div class="chk"><div class="chk-dot">✓</div><div class="small"><strong style="color:var(--white)">Auditoría de tus datos</strong> — Revisamos que la información financiera sea precisa e íntegra antes de tomar decisiones.</div></div>
+        </div>
+      </div>
+      <div class="w45 flex col" style="gap:1.5%">
+        <div class="card-s">
+          <div style="font-size:0.8vw;font-weight:700;color:#FCA5A5;letter-spacing:0.1em;margin-bottom:1%">SIN ASESORÍA CONTABLE</div>
+          <div class="small">Multas por errores en declaraciones, desconocimiento de la rentabilidad real y decisiones tomadas con información incorrecta.</div>
+        </div>
+        <div class="card-highlight">
+          <div style="font-size:0.8vw;font-weight:700;color:var(--accent-light);letter-spacing:0.1em;margin-bottom:1%">CON NUESTRA ASESORÍA</div>
+          <div class="small" style="color:rgba(255,255,255,0.85)">Tranquilidad fiscal, registros confiables y una visión clara de la salud financiera de tu negocio en todo momento.</div>
+        </div>
+        <div class="card-accent" style="text-align:center">
+          <div style="font-size:1.8vw;margin-bottom:0.5%">🧾</div>
+          <div class="small" style="color:var(--accent-light);font-weight:600">Entregable típico</div>
+          <div class="small">Estados financieros mensuales, declaraciones tributarias y reporte de salud contable del negocio.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">3 / 7</div>
+</div>
+
+<!-- S4: SERVICIO 2 — OPTIMIZACIÓN TRIBUTARIA -->
+<div class="slide bg-dark">
+  <div class="slide-logo"><svg width="20" height="20" viewBox="0 0 34 34" fill="none"><rect width="34" height="34" rx="7" fill="#0A2342"/><polyline points="5,26 5,10 17,21 29,10 29,26" fill="none" stroke="white" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/></svg><div><div class="sl-text">MÉTRICA</div><div class="sl-sub">& NEGOCIOS</div></div></div>
+  <div class="z1 pad flex col h100" style="justify-content:center">
+    <div class="flex row" style="align-items:center;gap:1vw;margin-bottom:0.8%">
+      <div class="ico">💎</div>
+      <div class="cat-label" style="margin:0">Servicio 2 — Optimización tributaria</div>
+    </div>
+    <div class="accent-line"></div>
+    <div class="flex row" style="gap:4%;align-items:flex-start">
+      <div class="w55">
+        <div class="h2" style="font-size:2vw;margin-bottom:1.5%">Paga lo que la ley exige,<br>ni un peso más</div>
+        <div class="body" style="margin-bottom:1.5%">Optimizar impuestos <strong style="color:var(--white)">no es evadir</strong> — es conocer la ley tan bien que aprovechas todos los beneficios, deducciones y estrategias que el Estado mismo permite.</div>
+        <div class="body" style="margin-bottom:2%">Muchos empresarios pagan más impuestos de lo necesario simplemente porque nadie les explicó cómo funciona el sistema tributario colombiano a su favor.</div>
+        <div class="div"></div>
+        <div style="margin-top:1.5%">
+          <div class="chk"><div class="chk-dot">✓</div><div class="small"><strong style="color:var(--white)">Deducciones que estás dejando pasar</strong> — Gastos que puedes descontar legalmente y que reducen tu base tributaria.</div></div>
+          <div class="chk"><div class="chk-dot">✓</div><div class="small"><strong style="color:var(--white)">Régimen adecuado para tu negocio</strong> — ¿Estás en el régimen correcto o estás pagando más de lo que te corresponde?</div></div>
+          <div class="chk"><div class="chk-dot">✓</div><div class="small"><strong style="color:var(--white)">Planeación tributaria anual</strong> — Anticipamos el impacto fiscal de tus decisiones para que no haya sorpresas al cierre del año.</div></div>
+        </div>
+      </div>
+      <div class="w45 flex col" style="gap:1.5%">
+        <div class="card-s">
+          <div style="font-size:0.85vw;font-weight:700;color:var(--gold);letter-spacing:0.08em;margin-bottom:1.2%">UN EJEMPLO REAL</div>
+          <div class="small" style="margin-bottom:0.8%">Una empresa factura <strong style="color:var(--white)">$200M anuales</strong> y paga impuestos sobre ese valor sin aprovechar deducciones disponibles.</div>
+          <div class="small">Con una estrategia tributaria adecuada, podría reducir su base gravable legalmente y ahorrar <strong style="color:var(--accent-light)">millones de pesos al año.</strong></div>
+        </div>
+        <div class="card-highlight" style="text-align:center">
+          <div style="font-size:1.6vw;margin-bottom:0.5%">💎</div>
+          <div class="small" style="color:var(--accent-light);font-weight:600">Entregable típico</div>
+          <div class="small">Plan de optimización tributaria con estrategias legales aplicables a tu negocio y proyección de ahorro estimado.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">4 / 7</div>
+</div>
+
+<!-- S5: DIFERENCIA ENTRE SERVICIOS -->
+<div class="slide bg-surface">
+  <div class="slide-logo"><svg width="20" height="20" viewBox="0 0 34 34" fill="none"><rect width="34" height="34" rx="7" fill="#0A2342"/><polyline points="5,26 5,10 17,21 29,10 29,26" fill="none" stroke="white" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/></svg><div><div class="sl-text">MÉTRICA</div><div class="sl-sub">& NEGOCIOS</div></div></div>
+  <div class="z1 pad flex col h100" style="justify-content:center">
+    <div class="cat-label">💰 Finanzas & Contabilidad</div>
+    <div class="accent-line"></div>
+    <div class="h2" style="margin-bottom:2.5%">¿Cuál necesitas tú?</div>
+    <div class="flex row" style="gap:3%;align-items:stretch">
+      <div class="card-s w50 flex col" style="gap:1.5%">
+        <div style="display:flex;align-items:center;gap:0.8vw;margin-bottom:0.5%">
+          <div class="ico" style="width:2.5vw;height:2.5vw;font-size:1.2vw">🧾</div>
+          <div class="h3" style="font-size:1.15vw">Asesoría contable y fiscal</div>
+        </div>
+        <div class="small" style="margin-bottom:1%">Es un servicio <strong style="color:var(--white)">continuo</strong>. Ideal si necesitas que alguien lleve el día a día de tu contabilidad, te ayude con las declaraciones y te mantenga al día con la DIAN.</div>
+        <div class="div"></div>
+        <div class="small" style="color:var(--accent-light);font-weight:600;margin-bottom:0.5%">Lo necesitas si...</div>
+        <div class="chk" style="margin-bottom:0.5%"><div class="chk-dot">✓</div><div class="small">No tienes contador propio o el que tienes no es de confianza</div></div>
+        <div class="chk" style="margin-bottom:0.5%"><div class="chk-dot">✓</div><div class="small">Tus registros financieros están desorganizados</div></div>
+        <div class="chk"><div class="chk-dot">✓</div><div class="small">Quieres estados financieros confiables para tomar decisiones</div></div>
+      </div>
+      <div class="card-highlight w50 flex col" style="gap:1.5%">
+        <div style="display:flex;align-items:center;gap:0.8vw;margin-bottom:0.5%">
+          <div class="ico">💎</div>
+          <div class="h3" style="font-size:1.15vw">Optimización tributaria</div>
+        </div>
+        <div class="small" style="margin-bottom:1%">Es un servicio <strong style="color:var(--white)">estratégico</strong>. Ideal si ya tienes contabilidad organizada pero sientes que pagas demasiados impuestos y quieres reducir esa carga de forma legal.</div>
+        <div class="div"></div>
+        <div class="small" style="color:var(--accent-light);font-weight:600;margin-bottom:0.5%">Lo necesitas si...</div>
+        <div class="chk" style="margin-bottom:0.5%"><div class="chk-dot">✓</div><div class="small">Tus impuestos aumentaron con el crecimiento de ventas</div></div>
+        <div class="chk" style="margin-bottom:0.5%"><div class="chk-dot">✓</div><div class="small">Nunca has hecho una planeación tributaria anual</div></div>
+        <div class="chk"><div class="chk-dot">✓</div><div class="small">Quieres saber cuánto puedes ahorrar legalmente</div></div>
+      </div>
+    </div>
+    <div class="card-accent flex row" style="gap:1vw;align-items:center;margin-top:2%">
+      <div style="font-size:1.6vw">💡</div>
+      <div class="body-w" style="font-size:1vw">Muchos clientes empiezan con la asesoría contable y, una vez tienen sus finanzas ordenadas, avanzan a la optimización tributaria. <strong style="color:var(--white)">Se complementan perfectamente.</strong></div>
+    </div>
+  </div>
+  <div class="slide-num">5 / 7</div>
+</div>
+
+<!-- S6: CÓMO TRABAJAMOS -->
+<div class="slide bg-dark">
+  <div class="slide-logo"><svg width="20" height="20" viewBox="0 0 34 34" fill="none"><rect width="34" height="34" rx="7" fill="#0A2342"/><polyline points="5,26 5,10 17,21 29,10 29,26" fill="none" stroke="white" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/></svg><div><div class="sl-text">MÉTRICA</div><div class="sl-sub">& NEGOCIOS</div></div></div>
+  <div class="z1 pad flex col h100" style="justify-content:center">
+    <div class="cat-label">¿Cómo trabajamos?</div>
+    <div class="accent-line"></div>
+    <div class="h2" style="margin-bottom:3%">Simple, ordenado y transparente</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:2%">
+      <div class="card-s flex col" style="align-items:center;text-align:center;gap:1.2%;padding:3% 2%">
+        <div style="width:2.8vw;height:2.8vw;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:1.1vw;font-weight:800;color:#000">1</div>
+        <div style="font-size:1.8vw;margin:0.5% 0">🗣️</div>
+        <div class="h3" style="font-size:1.05vw">Diagnóstico</div>
+        <div class="small" style="text-align:center">Revisamos el estado actual de tu contabilidad y tus obligaciones fiscales.</div>
+      </div>
+      <div class="card-s flex col" style="align-items:center;text-align:center;gap:1.2%;padding:3% 2%">
+        <div style="width:2.8vw;height:2.8vw;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:1.1vw;font-weight:800;color:#000">2</div>
+        <div style="font-size:1.8vw;margin:0.5% 0">🔧</div>
+        <div class="h3" style="font-size:1.05vw">Organización</div>
+        <div class="small" style="text-align:center">Ponemos al día los registros y corregimos inconsistencias en la información financiera.</div>
+      </div>
+      <div class="card-s flex col" style="align-items:center;text-align:center;gap:1.2%;padding:3% 2%">
+        <div style="width:2.8vw;height:2.8vw;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:1.1vw;font-weight:800;color:#000">3</div>
+        <div style="font-size:1.8vw;margin:0.5% 0">📊</div>
+        <div class="h3" style="font-size:1.05vw">Estrategia</div>
+        <div class="small" style="text-align:center">Diseñamos el plan tributario y las mejores prácticas contables para tu tipo de negocio.</div>
+      </div>
+      <div class="card-s flex col" style="align-items:center;text-align:center;gap:1.2%;padding:3% 2%">
+        <div style="width:2.8vw;height:2.8vw;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:1.1vw;font-weight:800;color:#000">4</div>
+        <div style="font-size:1.8vw;margin:0.5% 0">🔄</div>
+        <div class="h3" style="font-size:1.05vw">Seguimiento</div>
+        <div class="small" style="text-align:center">Acompañamiento mensual para que tu contabilidad siempre esté al día y sin sorpresas.</div>
+      </div>
+    </div>
+    <div class="card-accent flex row" style="gap:1vw;align-items:center;margin-top:3%">
+      <div style="font-size:1.8vw">🤝</div>
+      <div class="body-w" style="font-size:1vw">Trabajamos con contadores certificados. Tu negocio queda en manos expertas — <strong style="color:var(--white)">con la tranquilidad de que todo está en regla.</strong></div>
+    </div>
+  </div>
+  <div class="slide-num">6 / 7</div>
+</div>
+
+<!-- S7: CIERRE -->
+<div class="slide bg-hero">
+  <div class="overlay"></div>
+  <div class="z1 pad flex col h100" style="justify-content:space-between">
+    <div style="display:flex;align-items:center;gap:0.8vw">
+      <svg width="28" height="28" viewBox="0 0 34 34" fill="none"><rect width="34" height="34" rx="7" fill="#0A2342"/><polyline points="5,26 5,10 17,21 29,10 29,26" fill="none" stroke="white" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/></svg>
+      <div><div style="font-size:1vw;font-weight:700;letter-spacing:0.08em;color:var(--white)">MÉTRICA</div><div style="font-size:0.65vw;letter-spacing:0.18em;color:var(--gold)">& NEGOCIOS</div></div>
+    </div>
+    <div style="max-width:55%">
+      <div class="cat-label">💰 Finanzas & Contabilidad</div>
+      <div class="h1" style="font-size:3.2vw;margin-bottom:2%">¿Listo para tener tus<br>finanzas <em>en orden</em>?</div>
+      <div class="body-w" style="margin-bottom:3%">Agendemos una consulta. Revisamos tu situación actual y te decimos exactamente qué necesitas y cómo podemos ayudarte.</div>
+      <div class="flex col" style="gap:1%">
+        <div class="flex row" style="align-items:center;gap:0.8vw"><div style="font-size:1.2vw">📞</div><div class="body-w">301 392 3580</div></div>
+        <div class="flex row" style="align-items:center;gap:0.8vw"><div style="font-size:1.2vw">✉️</div><div class="body-w">directorcomercial@metricaynegocios.com</div></div>
+        <div class="flex row" style="align-items:center;gap:0.8vw"><div style="font-size:1.2vw">🌐</div><div class="body-w">metricaynegocios.com</div></div>
+      </div>
+    </div>
+    <div style="font-size:0.75vw;color:rgba(255,255,255,0.3)">© 2025 Métrica & Negocios · Medellín, Colombia</div>
+  </div>
+  <div class="slide-num">7 / 7</div>
+</div>
+
+</div>
+
+<div class="progress"><div class="pbar" id="pbar" style="width:14.3%"></div></div>
+<div class="controls">
+  <button class="btn-c" onclick="nav(-1)">&#8592;</button>
+  <span class="s-counter" id="counter">1 / 7</span>
+  <button class="btn-c" onclick="nav(1)">&#8594;</button>
+  <button class="btn-fs" onclick="toggleFS()">⛶ Pantalla completa</button>
+</div>
+
+<script>
+const slides=document.querySelectorAll('.slide');
+const total=slides.length;
+let cur=0;
+function show(n){slides[cur].classList.remove('active');cur=(n+total)%total;slides[cur].classList.add('active');document.getElementById('counter').textContent=(cur+1)+' / '+total;document.getElementById('pbar').style.width=((cur+1)/total*100)+'%';}
+function nav(d){show(cur+d)}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowDown')nav(1);if(e.key==='ArrowLeft'||e.key==='ArrowUp')nav(-1);});
+let tx=0;
+document.querySelector('.deck').addEventListener('touchstart',e=>tx=e.touches[0].clientX);
+document.querySelector('.deck').addEventListener('touchend',e=>{const dx=tx-e.changedTouches[0].clientX;if(Math.abs(dx)>40)nav(dx>0?1:-1);});
+function toggleFS(){if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen();}
+</script>
+</body>
+</html>
