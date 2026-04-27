@@ -166,6 +166,7 @@ footer{background:#030810;border-top:1px solid var(--border);padding:24px 4%;dis
   h1{font-size:30px}
   .value-row{grid-template-columns:1fr}
   .nav-btn:not(.cta){display:none}
+  .nav-btn.diagnostico-btn{display:inline-flex}
   .acc-tag{display:none}
   .pyramid-container{flex-direction:column}
   .pyramid-svg-wrap{flex:none;width:100%}
@@ -182,9 +183,7 @@ footer{background:#030810;border-top:1px solid var(--border);padding:24px 4%;dis
     </div>
     <div class="nav-links">
       <button class="nav-btn" onclick="goTo('servicios')">Servicios</button>
-      <button class="nav-btn" onclick="goTo('diagnostico')">Diagnóstico</button>
-      <button class="nav-btn" onclick="goTo('nosotros')">Nosotros</button>
-      <button class="nav-btn" onclick="goTo('contacto')">Contacto</button>
+      <button class="nav-btn diagnostico-btn" onclick="goTo('diagnostico')">Diagnóstico</button>
       <button class="nav-btn cta" onclick="goTo('contacto')">Agenda una llamada</button>
     </div>
   </div>
